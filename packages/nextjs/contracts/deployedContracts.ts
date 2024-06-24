@@ -7,8 +7,33 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "string",
+              name: "winnerEmitted",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "playerOneChoice",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "playerTwoChoice",
+              type: "string",
+            },
+          ],
+          name: "GameDone",
+          type: "event",
+        },
         {
           inputs: [
             {

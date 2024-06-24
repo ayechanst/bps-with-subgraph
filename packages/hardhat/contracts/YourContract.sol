@@ -17,7 +17,11 @@ contract YourContract {
 	string public playerTwoChoice;
 	string public winner;
 
-	event PlayerInput(bool playerOneChose, bool playerTwoChose);
+	event GameDone(
+		string winnerEmitted,
+		string playerOneChoice,
+		string playerTwoChoice
+	);
 
 	function isEmptyString(string memory str) private pure returns (bool) {
 		return bytes(str).length == 0;
@@ -68,6 +72,7 @@ contract YourContract {
 
 	function playGame() public {
 		winner = determineWinner();
+		emit GameDone(winner, playerOneChoice, playerTwoChoice);
 		playerOneChoice = "";
 		playerTwoChoice = "";
 	}
