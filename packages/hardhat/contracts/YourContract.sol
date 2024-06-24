@@ -13,75 +13,62 @@ import "hardhat/console.sol";
  * @author BuidlGuidl
  */
 contract YourContract {
-	// State Variables
-	address public immutable owner;
-	string public greeting = "Building Unstoppable Apps!!!";
-	bool public premium = false;
-	uint256 public totalCounter = 0;
-	mapping(address => uint) public userGreetingCounter;
+	string public playerOneChoice;
+	string public playerTwoChoice;
+	string public winner;
 
-	// Events: a way to emit log statements from smart contract that can be listened to by external parties
-	event GreetingChange(
-		address indexed greetingSetter,
-		string newGreeting,
-		bool premium,
-		uint256 value
-	);
+	event PlayerInput(bool playerOneChose, bool playerTwoChose);
 
-	// Constructor: Called once on contract deployment
-	// Check packages/hardhat/deploy/00_deploy_your_contract.ts
-	constructor(address _owner) {
-		owner = _owner;
+	function isEmptyString(string memory str) private pure returns (bool) {
+		return bytes(str).length == 0;
 	}
 
-	// Modifier: used to define a set of rules that must be met before or after a function is executed
-	// Check the withdraw() function
-	modifier isOwner() {
-		// msg.sender: predefined variable that represents address of the account that called the current function
-		require(msg.sender == owner, "Not the Owner");
-		_;
+	function hash(string memory str) private pure returns (bytes32 strHash) {
+		return keccak256(abi.encodePacked(str));
 	}
 
-	/**
-	 * Function that allows anyone to change the state variable "greeting" of the contract and increase the counters
-	 *
-	 * @param _newGreeting (string memory) - new greeting to save on the contract
-	 */
-	function setGreeting(string memory _newGreeting) public payable {
-		// Print data to the hardhat chain console. Remove when deploying to a live network.
-		console.log(
-			"Setting new greeting '%s' from %s",
-			_newGreeting,
-			msg.sender
-		);
-
-		// Change state variables
-		greeting = _newGreeting;
-		totalCounter += 1;
-		userGreetingCounter[msg.sender] += 1;
-
-		// msg.value: built-in global variable that represents the amount of ether sent with the transaction
-		if (msg.value > 0) {
-			premium = true;
+	function input(string memory choice) public {
+		bool isEmpty = isEmptyString(playerOneChoice);
+		if (isEmpty) {
+			playerOneChoice = choice;
 		} else {
-			premium = false;
+			playerTwoChoice = choice;
 		}
-
-		// emit: keyword used to trigger an event
-		emit GreetingChange(msg.sender, _newGreeting, msg.value > 0, msg.value);
 	}
 
-	/**
-	 * Function that allows the owner to withdraw all the Ether in the contract
-	 * The function can only be called by the owner of the contract as defined by the isOwner modifier
-	 */
-	function withdraw() public isOwner {
-		(bool success, ) = owner.call{ value: address(this).balance }("");
-		require(success, "Failed to send Ether");
+	bytes32 private blockHash = hash("block");
+	bytes32 private paperHash = hash("paper");
+	bytes32 private scissorsHash = hash("scissors");
+
+	function determineWinner() private view returns (string memory outcome) {
+		bytes32 playerOneHash = hash(playerOneChoice);
+		bytes32 playerTwoHash = hash(playerTwoChoice);
+		if (playerOneHash == playerTwoHash) {
+			return "tie";
+		} else if (playerOneHash == blockHash) {
+			if (playerTwoHash == paperHash) {
+				return "player 2 wins";
+			} else {
+				return "player 1 wins";
+			}
+		} else if (playerOneHash == paperHash) {
+			if (playerTwoHash == scissorsHash) {
+				return "player 2 wins";
+			} else {
+				return "player 1 wins";
+			}
+		} else if (playerOneHash == scissorsHash) {
+			if (playerTwoHash == blockHash) {
+				return "player 2 wins";
+			} else {
+				return "player 1 wins";
+			}
+		}
 	}
 
-	/**
-	 * Function that allows the contract to receive ETH
-	 */
-	receive() external payable {}
+	function playGame() public {
+		winner = determineWinner();
+		playerOneChoice = "";
+		playerTwoChoice = "";
+	}
 }
