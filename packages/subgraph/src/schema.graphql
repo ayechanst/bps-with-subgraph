@@ -1,17 +1,18 @@
-type Greeting @entity {
+type Game @entity {
   id: ID!
-  sender: Sender!
-  greeting: String!
-  premium: Boolean
-  value: BigInt
-  createdAt: BigInt!
-  transactionHash: String!
+  playerOneChoice: String!
+  playerTwoChoice: String!
+  winner: String!
 }
 
-type Sender @entity {
+type Player @entity {
   id: ID!
-  address: Bytes!
-  greetings: [Greeting!] @derivedFrom(field: "sender")
-  createdAt: BigInt!
-  greetingCount: BigInt!
+  game: Game!
+  choice: String!
+}
+
+type Result @entity {
+  id: ID!
+  game: Game!
+  winner: Player!
 }

@@ -8,12 +8,6 @@ import {
   useScaffoldWriteContract,
 } from "~~/hooks/scaffold-eth";
 
-interface GameDoneEvent {
-  playerOneChoice: string;
-  playerTwoChoice: string;
-  winnerEmitted: string;
-}
-
 const Home: NextPage = () => {
   const { writeContractAsync } = useScaffoldWriteContract("YourContract");
   const { data } = useScaffoldReadContract({
@@ -39,9 +33,7 @@ const Home: NextPage = () => {
     eventName: "GameDone",
     onLogs: logs => {
       logs.map(log => {
-        const { winnerEmitted, playerOneChoice, playerTwoChoice } = log.args as GameDoneEvent;
-        console.log("Winner: ", winnerEmitted);
-        console.log("player choices:", playerOneChoice, playerTwoChoice);
+        const { winnerEmitted, playerOneChoice, playerTwoChoice } = log.args;
       });
     },
   });
