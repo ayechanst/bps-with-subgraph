@@ -10,33 +10,29 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class GreetingChange extends ethereum.Event {
-  get params(): GreetingChange__Params {
-    return new GreetingChange__Params(this);
+export class GameDone extends ethereum.Event {
+  get params(): GameDone__Params {
+    return new GameDone__Params(this);
   }
 }
 
-export class GreetingChange__Params {
-  _event: GreetingChange;
+export class GameDone__Params {
+  _event: GameDone;
 
-  constructor(event: GreetingChange) {
+  constructor(event: GameDone) {
     this._event = event;
   }
 
-  get greetingSetter(): Address {
-    return this._event.parameters[0].value.toAddress();
+  get winnerEmitted(): string {
+    return this._event.parameters[0].value.toString();
   }
 
-  get newGreeting(): string {
+  get playerOneChoice(): string {
     return this._event.parameters[1].value.toString();
   }
 
-  get premium(): boolean {
-    return this._event.parameters[2].value.toBoolean();
-  }
-
-  get value(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+  get playerTwoChoice(): string {
+    return this._event.parameters[2].value.toString();
   }
 }
 
@@ -45,14 +41,22 @@ export class YourContract extends ethereum.SmartContract {
     return new YourContract("YourContract", address);
   }
 
-  greeting(): string {
-    let result = super.call("greeting", "greeting():(string)", []);
+  playerOneChoice(): string {
+    let result = super.call(
+      "playerOneChoice",
+      "playerOneChoice():(string)",
+      []
+    );
 
     return result[0].toString();
   }
 
-  try_greeting(): ethereum.CallResult<string> {
-    let result = super.tryCall("greeting", "greeting():(string)", []);
+  try_playerOneChoice(): ethereum.CallResult<string> {
+    let result = super.tryCall(
+      "playerOneChoice",
+      "playerOneChoice():(string)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -60,157 +64,97 @@ export class YourContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toString());
   }
 
-  owner(): Address {
-    let result = super.call("owner", "owner():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_owner(): ethereum.CallResult<Address> {
-    let result = super.tryCall("owner", "owner():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  premium(): boolean {
-    let result = super.call("premium", "premium():(bool)", []);
-
-    return result[0].toBoolean();
-  }
-
-  try_premium(): ethereum.CallResult<boolean> {
-    let result = super.tryCall("premium", "premium():(bool)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  totalCounter(): BigInt {
-    let result = super.call("totalCounter", "totalCounter():(uint256)", []);
-
-    return result[0].toBigInt();
-  }
-
-  try_totalCounter(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("totalCounter", "totalCounter():(uint256)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  userGreetingCounter(param0: Address): BigInt {
+  playerTwoChoice(): string {
     let result = super.call(
-      "userGreetingCounter",
-      "userGreetingCounter(address):(uint256)",
-      [ethereum.Value.fromAddress(param0)]
+      "playerTwoChoice",
+      "playerTwoChoice():(string)",
+      []
     );
 
-    return result[0].toBigInt();
+    return result[0].toString();
   }
 
-  try_userGreetingCounter(param0: Address): ethereum.CallResult<BigInt> {
+  try_playerTwoChoice(): ethereum.CallResult<string> {
     let result = super.tryCall(
-      "userGreetingCounter",
-      "userGreetingCounter(address):(uint256)",
-      [ethereum.Value.fromAddress(param0)]
+      "playerTwoChoice",
+      "playerTwoChoice():(string)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  winner(): string {
+    let result = super.call("winner", "winner():(string)", []);
+
+    return result[0].toString();
+  }
+
+  try_winner(): ethereum.CallResult<string> {
+    let result = super.tryCall("winner", "winner():(string)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
   }
 }
 
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
+export class InputCall extends ethereum.Call {
+  get inputs(): InputCall__Inputs {
+    return new InputCall__Inputs(this);
   }
 
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
+  get outputs(): InputCall__Outputs {
+    return new InputCall__Outputs(this);
   }
 }
 
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
+export class InputCall__Inputs {
+  _call: InputCall;
 
-  constructor(call: ConstructorCall) {
+  constructor(call: InputCall) {
     this._call = call;
   }
 
-  get _owner(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class SetGreetingCall extends ethereum.Call {
-  get inputs(): SetGreetingCall__Inputs {
-    return new SetGreetingCall__Inputs(this);
-  }
-
-  get outputs(): SetGreetingCall__Outputs {
-    return new SetGreetingCall__Outputs(this);
-  }
-}
-
-export class SetGreetingCall__Inputs {
-  _call: SetGreetingCall;
-
-  constructor(call: SetGreetingCall) {
-    this._call = call;
-  }
-
-  get _newGreeting(): string {
+  get choice(): string {
     return this._call.inputValues[0].value.toString();
   }
 }
 
-export class SetGreetingCall__Outputs {
-  _call: SetGreetingCall;
+export class InputCall__Outputs {
+  _call: InputCall;
 
-  constructor(call: SetGreetingCall) {
+  constructor(call: InputCall) {
     this._call = call;
   }
 }
 
-export class WithdrawCall extends ethereum.Call {
-  get inputs(): WithdrawCall__Inputs {
-    return new WithdrawCall__Inputs(this);
+export class PlayGameCall extends ethereum.Call {
+  get inputs(): PlayGameCall__Inputs {
+    return new PlayGameCall__Inputs(this);
   }
 
-  get outputs(): WithdrawCall__Outputs {
-    return new WithdrawCall__Outputs(this);
+  get outputs(): PlayGameCall__Outputs {
+    return new PlayGameCall__Outputs(this);
   }
 }
 
-export class WithdrawCall__Inputs {
-  _call: WithdrawCall;
+export class PlayGameCall__Inputs {
+  _call: PlayGameCall;
 
-  constructor(call: WithdrawCall) {
+  constructor(call: PlayGameCall) {
     this._call = call;
   }
 }
 
-export class WithdrawCall__Outputs {
-  _call: WithdrawCall;
+export class PlayGameCall__Outputs {
+  _call: PlayGameCall;
 
-  constructor(call: WithdrawCall) {
+  constructor(call: PlayGameCall) {
     this._call = call;
   }
 }

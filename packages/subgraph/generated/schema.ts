@@ -11,7 +11,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class Greeting extends Entity {
+export class Game extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,22 +19,22 @@ export class Greeting extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Greeting entity without an ID");
+    assert(id != null, "Cannot save Game entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Greeting must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Game must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Greeting", id.toString(), this);
+      store.set("Game", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): Greeting | null {
-    return changetype<Greeting | null>(store.get_in_block("Greeting", id));
+  static loadInBlock(id: string): Game | null {
+    return changetype<Game | null>(store.get_in_block("Game", id));
   }
 
-  static load(id: string): Greeting | null {
-    return changetype<Greeting | null>(store.get("Greeting", id));
+  static load(id: string): Game | null {
+    return changetype<Game | null>(store.get("Game", id));
   }
 
   get id(): string {
@@ -50,8 +50,8 @@ export class Greeting extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get sender(): string {
-    let value = this.get("sender");
+  get playerOneChoice(): string {
+    let value = this.get("playerOneChoice");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -59,12 +59,12 @@ export class Greeting extends Entity {
     }
   }
 
-  set sender(value: string) {
-    this.set("sender", Value.fromString(value));
+  set playerOneChoice(value: string) {
+    this.set("playerOneChoice", Value.fromString(value));
   }
 
-  get greeting(): string {
-    let value = this.get("greeting");
+  get playerTwoChoice(): string {
+    let value = this.get("playerTwoChoice");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -72,55 +72,12 @@ export class Greeting extends Entity {
     }
   }
 
-  set greeting(value: string) {
-    this.set("greeting", Value.fromString(value));
+  set playerTwoChoice(value: string) {
+    this.set("playerTwoChoice", Value.fromString(value));
   }
 
-  get premium(): boolean {
-    let value = this.get("premium");
-    if (!value || value.kind == ValueKind.NULL) {
-      return false;
-    } else {
-      return value.toBoolean();
-    }
-  }
-
-  set premium(value: boolean) {
-    this.set("premium", Value.fromBoolean(value));
-  }
-
-  get value(): BigInt | null {
-    let value = this.get("value");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set value(value: BigInt | null) {
-    if (!value) {
-      this.unset("value");
-    } else {
-      this.set("value", Value.fromBigInt(<BigInt>value));
-    }
-  }
-
-  get createdAt(): BigInt {
-    let value = this.get("createdAt");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): string {
-    let value = this.get("transactionHash");
+  get winner(): string {
+    let value = this.get("winner");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -128,12 +85,12 @@ export class Greeting extends Entity {
     }
   }
 
-  set transactionHash(value: string) {
-    this.set("transactionHash", Value.fromString(value));
+  set winner(value: string) {
+    this.set("winner", Value.fromString(value));
   }
 }
 
-export class Sender extends Entity {
+export class Player extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -141,22 +98,22 @@ export class Sender extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Sender entity without an ID");
+    assert(id != null, "Cannot save Player entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Sender must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Player must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Sender", id.toString(), this);
+      store.set("Player", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): Sender | null {
-    return changetype<Sender | null>(store.get_in_block("Sender", id));
+  static loadInBlock(id: string): Player | null {
+    return changetype<Player | null>(store.get_in_block("Player", id));
   }
 
-  static load(id: string): Sender | null {
-    return changetype<Sender | null>(store.get("Sender", id));
+  static load(id: string): Player | null {
+    return changetype<Player | null>(store.get("Player", id));
   }
 
   get id(): string {
@@ -172,68 +129,95 @@ export class Sender extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get address(): Bytes {
-    let value = this.get("address");
+  get game(): string {
+    let value = this.get("game");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set address(value: Bytes) {
-    this.set("address", Value.fromBytes(value));
+  set game(value: string) {
+    this.set("game", Value.fromString(value));
   }
 
-  get greetings(): GreetingLoader {
-    return new GreetingLoader(
-      "Sender",
-      this.get("id")!.toString(),
-      "greetings"
-    );
-  }
-
-  get createdAt(): BigInt {
-    let value = this.get("createdAt");
+  get choice(): string {
+    let value = this.get("choice");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
-  }
-
-  get greetingCount(): BigInt {
-    let value = this.get("greetingCount");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set greetingCount(value: BigInt) {
-    this.set("greetingCount", Value.fromBigInt(value));
+  set choice(value: string) {
+    this.set("choice", Value.fromString(value));
   }
 }
 
-export class GreetingLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
+export class Result extends Entity {
+  constructor(id: string) {
     super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+    this.set("id", Value.fromString(id));
   }
 
-  load(): Greeting[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Greeting[]>(value);
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Result entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Result must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Result", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): Result | null {
+    return changetype<Result | null>(store.get_in_block("Result", id));
+  }
+
+  static load(id: string): Result | null {
+    return changetype<Result | null>(store.get("Result", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get game(): string {
+    let value = this.get("game");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set game(value: string) {
+    this.set("game", Value.fromString(value));
+  }
+
+  get winner(): string {
+    let value = this.get("winner");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set winner(value: string) {
+    this.set("winner", Value.fromString(value));
   }
 }

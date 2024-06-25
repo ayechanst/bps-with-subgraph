@@ -1,35 +1,17 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
 import {
   YourContract,
-  GreetingChange,
+  GameDone,
 } from "../generated/YourContract/YourContract";
-import { Greeting, Sender } from "../generated/schema";
+import { Game, Player, Result } from "../generated/schema";
 
-export function handleGreetingChange(event: GreetingChange): void {
-  let senderString = event.params.greetingSetter.toHexString();
+export function handleGameDone(event: GameDone): void {
+  let game = new Game(event.transaction.hash.toHex() + "_" + event.logIndex.toString());
+  game.playerOneChoice = event.params.playerOneChoice;
+  game.playerTwoChoice = event.params.playerTwoChoice;
+  game.winner = event.params.winnerEmitted;
+  game.save();
 
-  let sender = Sender.load(senderString);
-
-  if (sender === null) {
-    sender = new Sender(senderString);
-    sender.address = event.params.greetingSetter;
-    sender.createdAt = event.block.timestamp;
-    sender.greetingCount = BigInt.fromI32(1);
-  } else {
-    sender.greetingCount = sender.greetingCount.plus(BigInt.fromI32(1));
-  }
-
-  let greeting = new Greeting(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
-  );
-
-  greeting.greeting = event.params.newGreeting;
-  greeting.sender = senderString;
-  greeting.premium = event.params.premium;
-  greeting.value = event.params.value;
-  greeting.createdAt = event.block.timestamp;
-  greeting.transactionHash = event.transaction.hash.toHex();
-
-  greeting.save();
-  sender.save();
+  let player = new Player(event.transaction.hash.toHex() + "_" + event.logIndex.toString());
+  player.game = game.id;
+  player.choice = game.playerOneChoice;
 }
