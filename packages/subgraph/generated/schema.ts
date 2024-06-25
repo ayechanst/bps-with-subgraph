@@ -142,6 +142,19 @@ export class Player extends Entity {
     this.set("game", Value.fromString(value));
   }
 
+  get number(): BigInt {
+    let value = this.get("number");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set number(value: BigInt) {
+    this.set("number", Value.fromBigInt(value));
+  }
+
   get choice(): string {
     let value = this.get("choice");
     if (!value || value.kind == ValueKind.NULL) {

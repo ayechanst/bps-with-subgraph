@@ -8,6 +8,7 @@ type Game @entity {
 type Player @entity {
   id: ID!
   game: Game!
+  number: BigInt!
   choice: String!
 }
 
